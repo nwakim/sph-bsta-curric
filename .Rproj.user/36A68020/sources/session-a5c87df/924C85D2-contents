@@ -1,0 +1,35 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "SPH Biostatistics Curriculum"
+  navbar:
+    background: primary
+    search: true
+    logo: "images/PUBH_R.png"
+    foreground: "#fff"
+    collapse-below: sm
+    right:
+      - href: ds-lifecycle.qmd
+        text: Data Science Lifecycle
+      - href: concepts.qmd
+        text: Concepts
+      - href: equity.qmd
+        text: Equity training
+      - href: compentencies.qmd
+        text: Compentencies
+      - href: communication.qmd
+        text: Communication and Reports
+      - href: datasets.qmd
+        text: Datasets  
+        
+execute:
+  freeze: auto
+
+format:
+  html:
+    theme:
+      - sandstone_NW.scss
+    toc: true
+

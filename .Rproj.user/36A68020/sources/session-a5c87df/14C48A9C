@@ -1,26 +1,26 @@
 {
-    "id": "6DED7F8F",
+    "id": "14C48A9C",
     "path": "~/Library/CloudStorage/OneDrive-OregonHealth&ScienceUniversity/Administrative/BSTA_faculty/Documents - PH.Biostat Faculty/Education/curriculum-cohesion/curric-cohesion-site/compentencies.qmd",
     "project_path": "compentencies.qmd",
     "type": "quarto_markdown",
-    "hash": "1897211874",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1789183974361.0,
+    "created": 1789186262033.0,
     "source_on_save": false,
-    "relative_order": 4,
+    "relative_order": 6,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "381,0",
-        "scrollLine": "360"
+        "cursorPosition": "375,0",
+        "scrollLine": "358"
     },
     "folds": "",
-    "lastKnownWriteTime": 1789183980,
+    "lastKnownWriteTime": 1789186152,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1789183980525,
+    "last_content_update": 1789186152,
     "read_only": false,
     "read_only_alternatives": []
 }
