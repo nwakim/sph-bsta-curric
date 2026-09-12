@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Program compentencies – SPH Biostatistics Curriculum</title>
+<title>Program competencies – SPH Biostatistics Curriculum</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -136,7 +136,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Program compentencies</h1>
+<h1 class="title">Program competencies</h1>
 </div>
 
 
@@ -153,8 +153,382 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<style>
+.cc-wrap { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color: #3e3f3a; max-width: 1200px; margin: 0 auto; }
+.cc-intro { max-width: 900px; margin: 0 0 1.5rem 0; line-height: 1.55; }
+.cc-intro .cc-note { font-size: 0.92em; color: #6c757d; margin-top: .5rem; }
+
+/* Competency legend */
+.cc-competencies { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.75rem; margin: 1rem 0 2rem 0; }
+.cc-chip { display: flex; gap: .65rem; align-items: flex-start; border: 1px solid #dfd7ca; border-radius: 10px; padding: .7rem .85rem; background: #fff; cursor: pointer; text-align: left; transition: box-shadow .15s ease, transform .15s ease; }
+.cc-chip:hover, .cc-chip:focus-visible { box-shadow: 0 2px 10px rgba(0,0,0,.12); transform: translateY(-1px); outline: none; }
+.cc-chip.is-active { box-shadow: 0 0 0 2px rgba(0,0,0,.35) inset; }
+.cc-chip-badge { flex: 0 0 auto; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .95rem; color: #fff; }
+.cc-chip-text { font-size: .87rem; line-height: 1.35; }
+.cc-chip-text strong { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .02em; color: #6c757d; margin-bottom: .15rem; font-weight: 700; }
+
+.cc-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: .85rem; }
+.cc-toolbar-group { display: inline-flex; border: 1px solid #dfd7ca; border-radius: 8px; overflow: hidden; }
+.cc-toolbar-group button { border: none; background: #fff; padding: .4rem .85rem; font-size: .85rem; cursor: pointer; color: #495057; }
+.cc-toolbar-group button + button { border-left: 1px solid #dfd7ca; }
+.cc-toolbar-group button.is-active { background: #193D78; color: #fff; }
+.cc-clear-btn { font-size: .85rem; color: #193D78; background: none; border: 1px solid #193D78; border-radius: 8px; padding: .4rem .85rem; cursor: pointer; }
+.cc-clear-btn:disabled { opacity: .35; cursor: default; }
+.cc-status { font-size: .85rem; color: #6c757d; margin-left: auto; }
+
+/* Table */
+.cc-table-scroll { overflow-x: auto; border: 1px solid #dfd7ca; border-radius: 10px; }
+table.cc-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 760px; background: #fff; font-size: .88rem; }
+table.cc-table th, table.cc-table td { padding: .55rem .6rem; border-bottom: 1px solid #eee2d6; text-align: center; vertical-align: middle; }
+table.cc-table thead th { background: #193D78; color: #fff; font-weight: 600; position: sticky; top: 0; z-index: 3; cursor: default; }
+table.cc-table thead th.cc-col-course { text-align: left; z-index: 4; }
+table.cc-table thead th.cc-competency-head { cursor: pointer; user-select: none; min-width: 88px; }
+table.cc-table thead th.cc-competency-head.is-dim { opacity: .35; }
+table.cc-table thead th.cc-competency-head .cc-head-badge { width: 1.6rem; height: 1.6rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-weight: 700; font-size: .85rem; }
+th.cc-col-course, td.cc-col-course { position: sticky; left: 0; background: #fff; z-index: 2; text-align: left; min-width: 300px; box-shadow: 1px 0 0 #dfd7ca; }
+table.cc-table thead th.cc-col-course { background: #193D78; }
+tr.cc-group-row td { background: #f8f5f0; color: #495057; font-weight: 700; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; text-align: left; position: sticky; left: 0; }
+tr.cc-course-row:hover td { background: #f8f5f0; }
+tr.cc-course-row.is-dimmed { opacity: .3; }
+td.cc-col-course .cc-course-code { font-weight: 700; color: #193D78; border-bottom: 1px dashed #98978b; cursor: help; }
+td.cc-col-course .cc-course-title { color: #495057; display: block; font-size: .82rem; margin-top: .1rem; }
+td.cc-col-course .cc-tag { display: inline-block; font-size: .68rem; text-transform: uppercase; font-weight: 700; letter-spacing: .03em; padding: .1rem .4rem; border-radius: 5px; margin-left: .4rem; vertical-align: middle; }
+td.cc-col-course .cc-tag.req { background: #e7f0f7; color: #193D78; }
+td.cc-col-course .cc-tag.elec { background: #f2eee6; color: #6c757d; }
+
+.cc-dot { width: 1.15rem; height: 1.15rem; border-radius: 50%; display: inline-block; }
+.cc-dot.is-off { background: #ece7dd; }
+td.cc-competency-cell.is-dim { opacity: .25; }
+
+/* Tooltip */
+#cc-tooltip { position: fixed; max-width: 340px; background: #212529; color: #fff; padding: .65rem .8rem; border-radius: 8px; font-size: .82rem; line-height: 1.4; box-shadow: 0 6px 20px rgba(0,0,0,.25); z-index: 50; pointer-events: none; opacity: 0; transition: opacity .12s ease; }
+#cc-tooltip.is-visible { opacity: 1; }
+#cc-tooltip .cc-tt-title { font-weight: 700; margin-bottom: .25rem; display: block; }
+#cc-tooltip .cc-tt-meta { color: #cbd3da; font-size: .76rem; display: block; margin-bottom: .35rem; }
+
+@media (max-width: 640px) {
+  .cc-toolbar { flex-direction: column; align-items: flex-start; }
+  .cc-status { margin-left: 0; }
+}
+</style>
+
+<div class="cc-wrap">
+
+  <div class="cc-intro">
+    <p>The MS in Biostatistics program has six program competencies (below). This page maps every BSTA course in the MS curriculum to the competencies it addresses, based on each course's official description and prerequisites from the OHSU–PSU SPH
+    <a href="https://ohsu-psu-sph.org/current-graduate-students/course-directory/" target="_blank" rel="noopener">graduate course directory</a> and the
+    <a href="https://ohsu-psu-sph.org/wp-content/uploads/2026/08/SPH-AY26-27-MS-BIOS-Program-Guide_8.12.2026.pdf" target="_blank" rel="noopener">AY26–27 MS Biostatistics Program Guide</a>.</p>
+    <p class="cc-note">This is a working draft alignment, not an official published curriculum map — OHSU–PSU SPH does not currently publish one. Click a competency below (or a column header) to highlight which courses cover it. Hover or tab to a course name for its description.</p>
+  </div>
+
+  <div class="cc-competencies" id="cc-legend"></div>
+
+  <div class="cc-toolbar">
+    <div class="cc-toolbar-group" id="cc-filter-group">
+      <button type="button" data-filter="all" class="is-active">All courses</button>
+      <button type="button" data-filter="required">Required</button>
+      <button type="button" data-filter="elective">Elective</button>
+    </div>
+    <button type="button" class="cc-clear-btn" id="cc-clear" disabled="">Clear competency highlight</button>
+    <div class="cc-status" id="cc-status"></div>
+  </div>
+
+  <div class="cc-table-scroll">
+    
+<table id="cc-table" class="cc-table caption-top">
+<thead>
+<tr id="cc-head-row" class="header">
+<th class="cc-col-course" data-quarto-table-cell-role="th">BSTA course</th>
+</tr>
+</thead>
+<tbody id="cc-body">
+</tbody>
+</table>
+
+  </div>
+
+</div>
+
+<div id="cc-tooltip" role="tooltip"></div>
+
+<script>
+(function () {
+  var competencies = [
+    { id: "C1", label: "Theoretical foundation", color: "#193D78",
+      text: "Understand the theoretical foundation of statistical inference and its link to applications." },
+    { id: "C2", label: "Data mgmt & analysis", color: "#49A3D1",
+      text: "Apply data management skills and conduct statistical analysis for health sciences research projects." },
+    { id: "C3", label: "Translate & interpret", color: "#4EA627",
+      text: "Translate broad research goals into specific questions and procedures for statistical analysis, and interpret results in basic, clinical, translational, and public health research studies." },
+    { id: "C4", label: "Software selection", color: "#8043F3",
+      text: "Select and use appropriate statistical analysis software for analysis and information sharing (e.g., R, SAS, or other programs)." },
+    { id: "C5", label: "Communication", color: "#E75B5C",
+      text: "Communicate statistical methods and findings to specialist and non-specialist audiences." },
+    { id: "C6", label: "Ethics & equity", color: "#F7CB25", textColor: "#3e3f3a",
+      text: "Apply ethical and equitable data principles that govern statistical practice." }
+  ];
+
+  // competencies each course meets, drawn from each course's official description/prereqs
+  var courses = [
+    { group: "Required courses", items: [
+      { code: "BSTA 511 / 611", title: "Estimation and Hypothesis Testing for Applied Biostatistics", credits: 4, type: "required",
+        prereq: "None (program entry course)",
+        desc: "Covers a broad range of basic statistical methods used in the health sciences: summarizing data, probability concepts, confidence intervals, and parametric/nonparametric hypothesis testing for one- and two-sample problems, ANOVA, correlation, and simple linear regression, with an emphasis on how to interpret and communicate results.",
+        meets: ["C1","C2","C4","C5"] },
+      { code: "BSTA 512 / 612", title: "Linear Models", credits: 4, type: "required",
+        prereq: "BSTA 511/611",
+        desc: "Linear models including regression analysis and analysis of variance (ANOVA), with conceptual and theoretical foundations. PhD sections add mixed-effects models for longitudinal/repeated-measures data.",
+        meets: ["C1","C2","C4"] },
+      { code: "BSTA 513 / 613", title: "Categorical Data Analysis", credits: 4, type: "required",
+        prereq: "BSTA 511/611, BSTA 512/612",
+        desc: "Third course in the required applied sequence. Covers cross-tabulation statistics, matched-sample statistics, confounding/interaction in stratified tables, logistic regression (interpretation, adjustment, variable selection, model fit), Poisson and multinomial regression, and related machine-learning methods.",
+        meets: ["C1","C2","C3","C4"] },
+      { code: "BSTA 514", title: "Statistical Analysis of Time-to-Event Data", credits: 3, type: "required",
+        prereq: "BSTA 511/611, BSTA 512/612",
+        desc: "Introduces analysis of time-to-event (survival) data: Kaplan-Meier estimation, hypothesis testing, and Cox proportional hazards regression, with possible extensions to parametric survival, frailty, and competing-risks models &mdash; applied to health sciences research questions.",
+        meets: ["C1","C2","C3","C4"] },
+      { code: "BSTA 517", title: "Statistical Methods in Clinical Trial Design", credits: 3, type: "required",
+        prereq: "Not specified",
+        desc: "Online course on statistical methods for the design and analysis of clinical trials: introduction to clinical trials, Bayesian statistics fundamentals, sample-size computation, randomization methods, oncology trial design challenges, adaptive designs, and predictive-biomarker approaches.",
+        meets: ["C1","C3"] },
+      { code: "BSTA 519", title: "Applied Longitudinal Data Analysis", credits: 3, type: "required",
+        prereq: "BSTA 511/611, BSTA 512/612, BSTA 513/613",
+        desc: "For students who have completed the basic applied sequence and want more advanced methods for longitudinal data: statistical properties of repeated measurements, exploratory methods, mixed-effects models, and generalized estimating equations, with continuous, binary, and count outcome examples plus a final project.",
+        meets: ["C1","C2","C3","C4"] },
+      { code: "BSTA 535", title: "Biostatistics Capstone", credits: 3, type: "required",
+        prereq: "BSTA 513/613",
+        desc: "The culminating experience in biostatistics: students demonstrate the program competencies acquired in prior applied courses through real-life research, working with staff biostatisticians and content experts, comprehensive health-science data sources/systems, responsible-conduct-of-research training, and the equitable and ethical use of data.",
+        meets: ["C1","C2","C3","C4","C5","C6"] },
+      { code: "BSTA 550", title: "Introduction to Probability", credits: 3, type: "required",
+        prereq: "Acceptance to MS in Biostatistics program",
+        desc: "Introduction to probability theory: combinatorics, conditional probability and independence, discrete and continuous random variables, probability and joint distributions, expectation, transformations of random variables, moment generating functions, and the central limit theorem.",
+        meets: ["C1"] },
+      { code: "BSTA 551", title: "Theory of Statistical Inference I", credits: 4, type: "required",
+        prereq: "BSTA 550, differential and integral calculus",
+        desc: "Introduces the theoretical foundation of biostatistics: distributions of random variables, sufficiency and completeness, estimation theory (method of moments, MLE), convergence and finite/large-sample properties, interval estimation, hypothesis testing, and asymptotic tests (likelihood-ratio, score, Wald). Includes statistical simulation to evaluate methods.",
+        meets: ["C1","C4"] }
+    ]},
+    { group: "Elective courses", items: [
+      { code: "BSTA 500", title: "Reading and Conference", credits: "1&ndash;3", type: "elective",
+        prereq: "Instructor consent",
+        desc: "Independent study arranged with an instructor. Content and which competencies it addresses vary by topic and are negotiated case by case, so no fixed competency mapping is shown here.",
+        meets: [] },
+      { code: "BSTA 515", title: "Data Management and Analysis in SAS", credits: 3, type: "elective",
+        prereq: "Not specified",
+        desc: "For students who want to develop and expand data management, statistical analysis, and graphics skills for real-world applications using SAS &mdash; from foundational to advanced programming, exporting datasets, and building ODS output, using health-related datasets in a computer-lab format.",
+        meets: ["C2","C4"] },
+      { code: "BSTA 516", title: "Design and Analysis of Surveys", credits: 3, type: "elective",
+        prereq: "Not specified",
+        desc: "Introduces core concepts, techniques, and current practice of sample survey design and analysis: simple random, stratified, cluster, and complex sampling designs; probability weighting and adjustments; ratio/regression estimators; and variance estimation for complex surveys.",
+        meets: ["C1","C2","C3","C4"] },
+      { code: "BSTA 521", title: "Bayesian Methods for Data Analysis", credits: 3, type: "elective",
+        prereq: "Not specified",
+        desc: "A current description isn't published in the OHSU&#8211;PSU course directory; based on the course title, it introduces Bayesian approaches to statistical analysis (prior/posterior distributions and computational estimation methods) for applied data analysis. Mapping below is inferred from the title only &mdash; check with the instructor to confirm.",
+        meets: ["C1","C4"] },
+      { code: "BSTA 522", title: "Statistical Machine Learning and Big Data", credits: 3, type: "elective",
+        prereq: "BSTA 512/612",
+        desc: "Introduces theory and methods for statistical learning and data science, an area overlapping computer science, AI, machine learning/deep learning, and statistics &mdash; covering established statistical-learning approaches and newer methods for complex or unconventional data.",
+        meets: ["C1","C2","C4"] },
+      { code: "BSTA 523", title: "Design of Experiments", credits: 3, type: "elective",
+        prereq: "BSTA 511/611",
+        desc: "Experimental design and statistical analysis of biological/clinical data: replication, randomization, and blocking; matrix-algebra foundations for linear models; ANOVA, block designs, split-plot, repeated-measures ANOVA, ANCOVA, and response-surface designs, with computer applications throughout.",
+        meets: ["C1","C2","C3","C4"] },
+      { code: "BSTA 526", title: "R Programming for Health Data Science", credits: 3, type: "elective",
+        prereq: "BSTA 511/611 or instructor approval",
+        desc: "Builds R programming skills from advanced-beginner to intermediate level: loading data, data wrangling, visualization, automation, machine learning, and running statistical models &mdash; practical data-science skills for a career in statistics, epidemiology, or data science.",
+        meets: ["C2","C4","C5"] }
+    ]}
+  ];
+
+  var legend = document.getElementById("cc-legend");
+  var headRow = document.getElementById("cc-head-row");
+  var body = document.getElementById("cc-body");
+  var tooltip = document.getElementById("cc-tooltip");
+  var statusEl = document.getElementById("cc-status");
+  var clearBtn = document.getElementById("cc-clear");
+  var activeCompetency = null;
+  var activeFilter = "all";
+
+  var totalCourses = 0;
+  courses.forEach(function (g) { totalCourses += g.items.length; });
+
+  // Build legend chips
+  competencies.forEach(function (c) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cc-chip";
+    btn.dataset.id = c.id;
+    btn.innerHTML =
+      '<span class="cc-chip-badge" style="background:' + c.color + ';color:' + (c.textColor || "#fff") + '">' + c.id + '</span>' +
+      '<span class="cc-chip-text"><strong>' + c.label + '</strong>' + c.text + '</span>';
+    btn.addEventListener("click", function () { toggleCompetency(c.id); });
+    legend.appendChild(btn);
+  });
+
+  // Build header row
+  competencies.forEach(function (c) {
+    var th = document.createElement("th");
+    th.className = "cc-competency-head";
+    th.dataset.id = c.id;
+    th.innerHTML = '<span class="cc-head-badge" style="background:' + c.color + ';color:' + (c.textColor || "#fff") + '">' + c.id + '</span>';
+    th.addEventListener("click", function () { toggleCompetency(c.id); });
+    th.addEventListener("mouseenter", function (e) { showTooltip(e.currentTarget, "<span class='cc-tt-title'>" + c.id + " &middot; " + c.label + "</span>" + c.text); });
+    th.addEventListener("mouseleave", hideTooltip);
+    headRow.appendChild(th);
+  });
+
+  // Build body rows
+  courses.forEach(function (group) {
+    var gRow = document.createElement("tr");
+    gRow.className = "cc-group-row";
+    var gTd = document.createElement("td");
+    gTd.colSpan = competencies.length + 1;
+    gTd.textContent = group.group;
+    gRow.appendChild(gTd);
+    body.appendChild(gRow);
+
+    group.items.forEach(function (course) {
+      var tr = document.createElement("tr");
+      tr.className = "cc-course-row";
+      tr.dataset.type = course.type;
+
+      var tdCourse = document.createElement("td");
+      tdCourse.className = "cc-col-course";
+      var tagClass = course.type === "required" ? "req" : "elec";
+      var tagLabel = course.type === "required" ? "Required" : "Elective";
+      tdCourse.innerHTML =
+        '<span class="cc-course-code" tabindex="0">' + course.code + '</span>' +
+        '<span class="cc-tag ' + tagClass + '">' + tagLabel + '</span>' +
+        '<span class="cc-course-title">' + course.title + '</span>';
+      var codeSpan = tdCourse.querySelector(".cc-course-code");
+      var ttHtml = "<span class='cc-tt-title'>" + course.code + " &mdash; " + course.title + "</span>" +
+        "<span class='cc-tt-meta'>" + course.credits + " credits &middot; Prereq: " + course.prereq + "</span>" + course.desc;
+      codeSpan.addEventListener("mouseenter", function (e) { showTooltip(e.currentTarget, ttHtml); });
+      codeSpan.addEventListener("mouseleave", hideTooltip);
+      codeSpan.addEventListener("focus", function (e) { showTooltip(e.currentTarget, ttHtml); });
+      codeSpan.addEventListener("blur", hideTooltip);
+      tr.appendChild(tdCourse);
+
+      competencies.forEach(function (c) {
+        var td = document.createElement("td");
+        td.className = "cc-competency-cell";
+        td.dataset.id = c.id;
+        if (course.meets.indexOf(c.id) > -1) {
+          td.innerHTML = '<span class="cc-dot" style="background:' + c.color + '" title="' + c.label + '"></span>';
+        } else {
+          td.innerHTML = '<span class="cc-dot is-off"></span>';
+        }
+        tr.appendChild(td);
+      });
+
+      body.appendChild(tr);
+    });
+  });
+
+  function toggleCompetency(id) {
+    activeCompetency = (activeCompetency === id) ? null : id;
+    render();
+  }
+
+  clearBtn.addEventListener("click", function () {
+    activeCompetency = null;
+    render();
+  });
+
+  document.getElementById("cc-filter-group").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-filter]");
+    if (!btn) return;
+    activeFilter = btn.dataset.filter;
+    Array.prototype.forEach.call(document.querySelectorAll("#cc-filter-group button"), function (b) {
+      b.classList.toggle("is-active", b === btn);
+    });
+    render();
+  });
+
+  function render() {
+    // legend + header active states
+    Array.prototype.forEach.call(document.querySelectorAll(".cc-chip"), function (chip) {
+      chip.classList.toggle("is-active", chip.dataset.id === activeCompetency);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".cc-competency-head"), function (th) {
+      var dim = activeCompetency && th.dataset.id !== activeCompetency;
+      th.classList.toggle("is-dim", !!dim);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".cc-competency-cell"), function (td) {
+      var dim = activeCompetency && td.dataset.id !== activeCompetency;
+      td.classList.toggle("is-dim", !!dim);
+    });
+
+    clearBtn.disabled = !activeCompetency;
+
+    var visibleCount = 0;
+    var matchCount = 0;
+    Array.prototype.forEach.call(document.querySelectorAll(".cc-course-row"), function (row) {
+      var typeOk = activeFilter === "all" || row.dataset.type === activeFilter;
+      row.style.display = typeOk ? "" : "none";
+      if (!typeOk) return;
+      visibleCount++;
+      if (activeCompetency) {
+        var cell = row.querySelector('.cc-competency-cell[data-id="' + activeCompetency + '"]');
+        var meets = cell && cell.querySelector(".cc-dot:not(.is-off)");
+        row.classList.toggle("is-dimmed", !meets);
+        if (meets) matchCount++;
+      } else {
+        row.classList.remove("is-dimmed");
+      }
+    });
+
+    // hide/show group header rows if all their courses are filtered out
+    Array.prototype.forEach.call(document.querySelectorAll(".cc-group-row"), function (gRow) {
+      var anyVisible = false;
+      var sib = gRow.nextElementSibling;
+      while (sib && !sib.classList.contains("cc-group-row")) {
+        if (sib.style.display !== "none") anyVisible = true;
+        sib = sib.nextElementSibling;
+      }
+      gRow.style.display = anyVisible ? "" : "none";
+    });
+
+    if (activeCompetency) {
+      var comp = competencies.filter(function (c) { return c.id === activeCompetency; })[0];
+      statusEl.textContent = matchCount + " of " + visibleCount + " courses shown cover " + comp.id + " (" + comp.label + ")";
+    } else {
+      statusEl.textContent = visibleCount + " of " + totalCourses + " courses shown";
+    }
+  }
+
+  function showTooltip(target, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add("is-visible");
+    var rect = target.getBoundingClientRect();
+    var top = rect.bottom + 8;
+    var left = rect.left;
+    // measure after content set
+    var ttRect = tooltip.getBoundingClientRect();
+    if (left + ttRect.width > window.innerWidth - 12) {
+      left = window.innerWidth - ttRect.width - 12;
+    }
+    if (top + ttRect.height > window.innerHeight - 12) {
+      top = rect.top - ttRect.height - 8;
+    }
+    tooltip.style.top = top + "px";
+    tooltip.style.left = Math.max(12, left) + "px";
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove("is-visible");
+  }
+
+  render();
+})();
+</script>
+<hr>
+<section id="ai-statement" class="level4">
+<h4 class="anchored" data-anchor-id="ai-statement">AI Statement</h4>
+<p>Claude AI (Sonnet 5) was used to create the interactive table and design the components. All course mappings to competencies were drafted by Claude AI, but reviewed and edited by Biostatistics Faculty.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

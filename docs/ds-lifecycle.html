@@ -153,8 +153,349 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<style>
+.dsl-wrap { font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color: #3e3f3a; max-width: 1180px; margin: 0 auto; }
+.dsl-intro { max-width: 900px; margin: 0 0 1rem 0; line-height: 1.55; }
+.dsl-intro .dsl-note { font-size: 0.92em; color: #6c757d; margin-top: .5rem; }
+
+.dsl-legend { display: flex; flex-wrap: wrap; gap: 1.1rem; align-items: center; margin-bottom: 1rem; font-size: .85rem; }
+.dsl-legend-item { display: inline-flex; align-items: center; gap: .4rem; }
+.dsl-swatch { width: .85rem; height: .85rem; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.dsl-swatch.related { background: transparent; border: 2px dashed #98978b; }
+.dsl-swatch.primary { background: #4EA627; }
+.dsl-swatch.gap { background: #C83532; }
+.dsl-swatch.ethics { background: transparent; border: 2px solid #193D78; }
+
+.dsl-stage-wrap { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; }
+.dsl-diagram-holder { flex: 1 1 560px; max-width: 700px; margin: 0 auto; }
+.dsl-diagram-holder svg { width: 100%; height: auto; display: block; }
+
+.dsl-panel { flex: 1 1 320px; min-width: 280px; border: 1px solid #dfd7ca; border-radius: 10px; background: #fff; padding: 1rem 1.15rem; min-height: 220px; }
+.dsl-panel h3 { margin: 0 0 .4rem 0; font-size: 1.05rem; color: #193D78; }
+.dsl-panel .dsl-panel-hint { color: #6c757d; font-size: .88rem; line-height: 1.5; }
+.dsl-panel-section { margin-top: .7rem; }
+.dsl-panel-section h4 { font-size: .75rem; text-transform: uppercase; letter-spacing: .03em; color: #6c757d; margin: 0 0 .35rem 0; }
+.dsl-course-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+.dsl-course-list li { display: flex; gap: .5rem; align-items: baseline; font-size: .87rem; }
+.dsl-course-list .dsl-course-code { font-weight: 700; color: #193D78; min-width: 6.5rem; }
+.dsl-gap-note { background: #fdecea; border: 1px solid #f1c3c0; border-radius: 8px; padding: .55rem .7rem; font-size: .85rem; margin-top: .6rem; color: #7a2b28; }
+.dsl-idea-note { background: #f8f5f0; border: 1px solid #dfd7ca; border-radius: 8px; padding: .55rem .7rem; font-size: .85rem; margin-top: .6rem; color: #495057; }
+
+/* SVG interactive elements */
+.dsl-stage-hit { cursor: pointer; }
+.dsl-stage-hit .dsl-stage-bg { transition: fill .15s ease, opacity .15s ease; }
+.dsl-stage-hit:hover .dsl-stage-bg, .dsl-stage-hit.is-active .dsl-stage-bg { fill: #F7CB25; }
+.dsl-stage-hit:hover .dsl-stage-label, .dsl-stage-hit.is-active .dsl-stage-label { fill: #193D78; }
+.dsl-stage-label { fill: #ffffff; font-size: 15px; font-weight: 600; pointer-events: none; }
+.dsl-badge { cursor: pointer; }
+.dsl-badge circle.dsl-badge-ring { transition: stroke-width .15s ease; }
+.dsl-badge:hover circle.dsl-badge-ring, .dsl-badge.is-active circle.dsl-badge-ring { stroke-width: 3.5; }
+.dsl-badge text { fill: #fff; font-size: 13px; font-weight: 700; pointer-events: none; }
+.dsl-gap-marker { cursor: pointer; }
+.dsl-gap-marker circle { transition: r .15s ease; }
+.dsl-gap-marker:hover circle, .dsl-gap-marker.is-active circle { r: 9; }
+.dsl-ethics-hit { cursor: pointer; }
+.dsl-ethics-hit text { transition: fill .15s ease; }
+.dsl-ethics-hit:hover text, .dsl-ethics-hit.is-active text { fill: #193D78; font-weight: 700; }
+
+#dsl-tooltip { position: fixed; max-width: 320px; background: #212529; color: #fff; padding: .65rem .8rem; border-radius: 8px; font-size: .82rem; line-height: 1.4; box-shadow: 0 6px 20px rgba(0,0,0,.25); z-index: 50; pointer-events: none; opacity: 0; transition: opacity .12s ease; }
+#dsl-tooltip.is-visible { opacity: 1; }
+#dsl-tooltip .dsl-tt-title { font-weight: 700; margin-bottom: .25rem; display: block; }
+
+@media (max-width: 900px) {
+  .dsl-stage-wrap { flex-direction: column; }
+  .dsl-diagram-holder { max-width: 480px; }
+}
+</style>
+
+<div class="dsl-wrap">
+
+  <div class="dsl-intro">
+    <p>This diagram maps BSTA courses (and a few related non-BSTA courses) onto a standard data science lifecycle, based on a working draft curriculum-mapping exercise. Each course may not cover every stage — as students move from foundational to advanced courses, coverage of the lifecycle expands. The outer ring names cross-cutting practice dimensions (fairness, transparency, generalizability, sustainability, accountability) that apply across every stage.</p>
+    <p class="dsl-note">Hover or tap a lifecycle stage (or its course badge) to see which courses cover it. Hover the outer ring labels for related notes. Red markers on the ring flag stages/transitions the draft identifies as possible curriculum gaps. This is a working draft, not an official curriculum document.</p>
+  </div>
+
+  <div class="dsl-legend">
+    <span class="dsl-legend-item"><span class="dsl-swatch primary"></span> Primary coverage</span>
+    <span class="dsl-legend-item"><span class="dsl-swatch related"></span> Related / partial coverage</span>
+    <span class="dsl-legend-item"><span class="dsl-swatch gap"></span> Possible gap</span>
+    <span class="dsl-legend-item"><span class="dsl-swatch ethics"></span> Cross-cutting dimension</span>
+  </div>
+
+  <div class="dsl-stage-wrap">
+    <div class="dsl-diagram-holder">
+      <svg id="dsl-svg" viewbox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" aria-label="Data science lifecycle diagram"></svg>
+    </div>
+    <div class="dsl-panel" id="dsl-panel">
+      <h3 id="dsl-panel-title" class="anchored">Explore the lifecycle</h3>
+      <p class="dsl-panel-hint" id="dsl-panel-hint">Hover or tap any stage on the wheel, a course badge, or an outer-ring label to see details here.</p>
+      <div id="dsl-panel-body"></div>
+    </div>
+  </div>
+
+  <div class="dsl-note" style="margin-top:1rem;">
+    <strong>Course key:</strong> "BSTA 511–513" and "BSTA 512–513" refer to the required applied sequence (Estimation &amp; Hypothesis Testing, Linear Models, Categorical Data Analysis). "PUBH 523" is the cross-program course this curriculum-mapping project was developed for. "BMI 525" is a Biomedical Informatics course outside the BSTA prefix. Full BSTA course descriptions are on the <a href="./compentencies.html">Competencies</a> page.
+  </div>
+
+</div>
+
+<div id="dsl-tooltip" role="tooltip"></div>
+
+<script>
+(function () {
+  var cx = 450, cy = 450;
+  var ringR = 235;      // stage label ring (must stay well inside circleR once label width is added)
+  var circleR = 350;    // filled blue lifecycle circle
+  var badgeR = 405;     // course badge ring (outside the blue circle)
+  var ethicsTextR = 460; // ethics dimension label radius (outside badges)
+
+  function toRad(deg) { return (deg - 90) * Math.PI / 180; } // -90 so 0deg = top
+  function polar(r, deg) {
+    var a = toRad(deg);
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+
+  var stages = [
+    { id: "design", label: ["Project motivation", "and design"],
+      primary: ["BSTA 517", "BSTA 523", "BSTA 535"], related: ["BSTA 511–513", "BSTA 514"] },
+    { id: "collect", label: ["Data collection", "and sourcing"],
+      primary: ["BSTA 511–513", "PUBH 523", "BSTA 535"], related: ["BSTA 514", "BSTA 519"] },
+    { id: "clean", label: ["Data cleaning and", "preparation"],
+      primary: ["BSTA 511–513", "BSTA 526", "PUBH 523", "BSTA 535"], related: [] },
+    { id: "explore", label: ["Data exploration", "and visualization"],
+      primary: ["BSTA 511–513", "BSTA 526", "PUBH 523", "BSTA 535", "BSTA 514", "BSTA 519", "BMI 525"], related: [] },
+    { id: "model", label: ["Modeling, algorithms,", "machine learning"],
+      primary: ["BSTA 511–513", "BSTA 551", "BSTA 535", "BSTA 514", "BSTA 519"], related: ["BSTA 550"] },
+    { id: "disseminate", label: ["Dissemination and/or", "deployment"],
+      primary: [], related: ["BSTA 512–513", "PUBH 523", "BSTA 535"] },
+    { id: "monitor", label: ["Monitoring and", "feedback"],
+      primary: [], related: [], gap: "No course currently covers post-deployment monitoring or feedback loops — an open gap in the curriculum." }
+  ];
+
+  var courseNames = {
+    "BSTA 511–513": "The required applied sequence: BSTA 511/611 Estimation & Hypothesis Testing, BSTA 512/612 Linear Models, BSTA 513/613 Categorical Data Analysis.",
+    "BSTA 512–513": "BSTA 512/612 Linear Models and BSTA 513/613 Categorical Data Analysis.",
+    "BSTA 514": "Statistical Analysis of Time-to-Event Data.",
+    "BSTA 517": "Statistical Methods in Clinical Trial Design.",
+    "BSTA 519": "Applied Longitudinal Data Analysis.",
+    "BSTA 523": "Design of Experiments.",
+    "BSTA 526": "R Programming for Health Data Science.",
+    "BSTA 535": "Biostatistics Capstone.",
+    "BSTA 550": "Introduction to Probability.",
+    "BSTA 551": "Theory of Statistical Inference I.",
+    "PUBH 523": "Cross-program course this curriculum-mapping project was developed for (title to be confirmed).",
+    "BMI 525": "Biomedical Informatics course outside the BSTA prefix (title to be confirmed)."
+  };
+
+  var gapTransitions = [
+    { after: 5, note: "GAP: no course explicitly bridges dissemination back into monitoring — idea: a communication-focused guest lecture from Health Data Sciences (HDS)." },
+    { after: 4, note: "GAP: modeling work doesn't currently connect to a deployment/dissemination experience — idea: a lab or collaborative course tied to a consulting-style experience (not formal consulting)." },
+    { after: 6, note: "GAP?: it's unclear whether monitoring/feedback ever routes back into new project design and motivation." }
+  ];
+
+  var ethicsDims = [
+    { label: "Fairness", note: "No notes yet — open question for curriculum discussion." },
+    { label: "Transparency", note: "Ethics and reproducibility." },
+    { label: "Generalizability", note: "BSTA 535 capstone: exercises using All of Us sample subsets with wearable-device data." },
+    { label: "Sustainability", note: "Infrastructure and deliverables — consider building in planned updates over time." },
+    { label: "Accountability", note: "Integrity and the responsibility of the statistician or investigator." }
+  ];
+
+  var svg = document.getElementById("dsl-svg");
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // defs: arrowhead marker
+  var defs = el("defs", {});
+  var marker = el("marker", { id: "dsl-arrow", markerWidth: 8, markerHeight: 8, refX: 6, refY: 3, orient: "auto", markerUnits: "strokeWidth" });
+  var arrowPath = el("path", { d: "M0,0 L6,3 L0,6 Z", fill: "#ffffff" });
+  marker.appendChild(arrowPath);
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  // background lifecycle circle
+  svg.appendChild(el("circle", { cx: cx, cy: cy, r: circleR, fill: "#49A3D1" }));
+  var titleText = el("text", { x: cx, y: cy - 8, "text-anchor": "middle", "font-size": "24", "font-weight": "600", fill: "#ffffff", "font-family": "Roboto, Arial, sans-serif" });
+  titleText.textContent = "Data Science";
+  svg.appendChild(titleText);
+  var titleText2 = el("text", { x: cx, y: cy + 20, "text-anchor": "middle", "font-size": "24", "font-weight": "600", fill: "#ffffff", "font-family": "Roboto, Arial, sans-serif" });
+  titleText2.textContent = "Lifecycle";
+  svg.appendChild(titleText2);
+
+  var n = stages.length;
+  var step = 360 / n;
+  var startAngle = -75; // degrees, tuned to roughly match the original hand-drawn layout
+
+  function angleFor(i) { return startAngle + i * step; }
+
+  // connector arcs between stages (drawn first, under labels)
+  for (var i = 0; i < n; i++) {
+    var a1 = angleFor(i), a2 = angleFor(i + 1);
+    var p1 = polar(ringR + 34, a1 + 10);
+    var p2 = polar(ringR + 34, a2 - 10);
+    var isGap = gapTransitions.filter(function (g) { return g.after === i; })[0];
+    var path = el("path", {
+      d: "M " + p1.x.toFixed(1) + " " + p1.y.toFixed(1) + " A " + (ringR + 34) + " " + (ringR + 34) + " 0 0 1 " + p2.x.toFixed(1) + " " + p2.y.toFixed(1),
+      fill: "none",
+      stroke: isGap ? "#F2A6A3" : "#ffffff",
+      "stroke-width": isGap ? 3 : 3,
+      "stroke-dasharray": isGap ? "2 6" : "none",
+      "marker-end": "url(#dsl-arrow)",
+      opacity: 0.95
+    });
+    svg.appendChild(path);
+
+    if (isGap) {
+      var mid = polar(ringR + 34, (a1 + a2) / 2);
+      var g = el("g", { class: "dsl-gap-marker", "data-note": isGap.note, tabindex: "0" });
+      g.appendChild(el("circle", { cx: mid.x, cy: mid.y, r: 7, fill: "#C83532", stroke: "#fff", "stroke-width": 1.5 }));
+      var gt = el("text", { x: mid.x, y: mid.y + 4, "text-anchor": "middle", "font-size": "10", "font-weight": "700", fill: "#fff" });
+      gt.textContent = "!";
+      g.appendChild(gt);
+      svg.appendChild(g);
+      attachHover(g, function (note) {
+        return function () { return { title: "Possible curriculum gap", body: "<div class='dsl-gap-note' style='margin-top:0'>" + note + "</div>" }; };
+      }(isGap.note));
+    }
+  }
+
+  // outer ethics ring (labels only, tangent-rotated straight text approximating the curved arc)
+  var ethicsStep = 360 / ethicsDims.length;
+  var ethicsStart = -60;
+  ethicsDims.forEach(function (dim, i) {
+    var ang = ethicsStart + i * ethicsStep;
+    var pos = polar(ethicsTextR, ang);
+    var rot = ang; // tangent-ish rotation
+    if (rot > 90 && rot < 270) rot += 180; // keep text upright
+    var g = el("g", { class: "dsl-ethics-hit", "data-label": dim.label, "data-note": dim.note, tabindex: "0", transform: "translate(" + pos.x.toFixed(1) + "," + pos.y.toFixed(1) + ") rotate(" + rot.toFixed(1) + ")" });
+    var t = el("text", { "text-anchor": "middle", "font-size": "15", "font-weight": "600", fill: "#193D78", "font-family": "Roboto, Arial, sans-serif", "letter-spacing": "0.03em" });
+    t.textContent = dim.label;
+    g.appendChild(t);
+    svg.appendChild(g);
+    attachHover(g, function (d) {
+      return function () { return { title: d.label, body: "<div class='dsl-idea-note' style='margin-top:0'>" + d.note + "</div>" }; };
+    }(dim));
+  });
+
+  // stage nodes + badges
+  stages.forEach(function (stage, i) {
+    var ang = angleFor(i);
+    var pos = polar(ringR, ang);
+    var badgePos = polar(badgeR, ang);
+
+    // connector line stage -> badge
+    svg.appendChild(el("line", { x1: pos.x, y1: pos.y, x2: badgePos.x, y2: badgePos.y, stroke: "#dfd7ca", "stroke-width": 1.5 }));
+
+    // stage hit area
+    var g = el("g", { class: "dsl-stage-hit", "data-stage": stage.id, tabindex: "0" });
+    g.appendChild(el("circle", { class: "dsl-stage-bg", cx: pos.x, cy: pos.y, r: 46, fill: "#193D78", opacity: 0.001 }));
+    var label = el("text", { class: "dsl-stage-label", x: pos.x, y: pos.y - 4, "text-anchor": "middle", "font-family": "Roboto, Arial, sans-serif" });
+    stage.label.forEach(function (line, li) {
+      label.appendChild(el("tspan", { x: pos.x, dy: li === 0 ? 0 : 14 }, )).textContent = line;
+    });
+    g.appendChild(label);
+    svg.appendChild(g);
+
+    var count = stage.primary.length;
+    var hasRelated = stage.related.length > 0;
+    var badgeColor = stage.gap ? "#C83532" : (count > 0 ? "#4EA627" : "#98978b");
+    var bg = el("g", { class: "dsl-badge", "data-stage": stage.id, tabindex: "0" });
+    bg.appendChild(el("circle", { class: "dsl-badge-ring", cx: badgePos.x, cy: badgePos.y, r: 20, fill: badgeColor, stroke: "#ffffff", "stroke-width": 2 }));
+    if (hasRelated) {
+      bg.appendChild(el("circle", { cx: badgePos.x, cy: badgePos.y, r: 26, fill: "none", stroke: "#98978b", "stroke-width": 2, "stroke-dasharray": "3 3" }));
+    }
+    var bt = el("text", { x: badgePos.x, y: badgePos.y + 5, "text-anchor": "middle" });
+    bt.textContent = stage.gap ? "—" : String(count);
+    bg.appendChild(bt);
+    svg.appendChild(bg);
+
+    function activate(node) {
+      Array.prototype.forEach.call(document.querySelectorAll(".is-active"), function (n) { n.classList.remove("is-active"); });
+      document.querySelectorAll('[data-stage="' + stage.id + '"]').forEach(function (n) { n.classList.add("is-active"); });
+    }
+
+    function renderPanel() {
+      var body = "";
+      if (stage.primary.length || stage.related.length) {
+        if (stage.primary.length) {
+          body += "<div class='dsl-panel-section'><h4>Primary coverage</h4><ul class='dsl-course-list'>" +
+            stage.primary.map(function (c) { return "<li><span class='dsl-course-code'>" + c + "</span><span>" + (courseNames[c] || "") + "</span></li>"; }).join("") +
+            "</ul></div>";
+        }
+        if (stage.related.length) {
+          body += "<div class='dsl-panel-section'><h4>Related / partial coverage</h4><ul class='dsl-course-list'>" +
+            stage.related.map(function (c) { return "<li><span class='dsl-course-code'>" + c + "</span><span>" + (courseNames[c] || "") + "</span></li>"; }).join("") +
+            "</ul></div>";
+        }
+      } else {
+        body += "<p class='dsl-panel-hint'>No courses currently map to this stage.</p>";
+      }
+      if (stage.gap) {
+        body += "<div class='dsl-gap-note'>" + stage.gap + "</div>";
+      }
+      document.getElementById("dsl-panel-title").textContent = stage.label.join(" ");
+      document.getElementById("dsl-panel-hint").style.display = "none";
+      document.getElementById("dsl-panel-body").innerHTML = body;
+    }
+
+    [g, bg].forEach(function (node) {
+      node.addEventListener("mouseenter", function () { activate(node); renderPanel(); showTooltipFor(node, stage); });
+      node.addEventListener("mouseleave", hideTooltip);
+      node.addEventListener("focus", function () { activate(node); renderPanel(); showTooltipFor(node, stage); });
+      node.addEventListener("blur", hideTooltip);
+      node.addEventListener("click", function () { activate(node); renderPanel(); });
+    });
+  });
+
+  function showTooltipFor(target, stage) {
+    var lines = [];
+    if (stage.primary.length) lines.push("<strong>Primary:</strong> " + stage.primary.join(", "));
+    if (stage.related.length) lines.push("<strong>Related:</strong> " + stage.related.join(", "));
+    if (!stage.primary.length && !stage.related.length) lines.push(stage.gap ? "No courses currently map here." : "No courses mapped.");
+    showTooltip(target, "<span class='dsl-tt-title'>" + stage.label.join(" ") + "</span>" + lines.join("<br>"));
+  }
+
+  var tooltip = document.getElementById("dsl-tooltip");
+  function attachHover(node, getContent) {
+    function handler() {
+      var c = getContent();
+      showTooltip(node, "<span class='dsl-tt-title'>" + c.title + "</span>" + c.body);
+      document.getElementById("dsl-panel-title").textContent = c.title;
+      document.getElementById("dsl-panel-hint").style.display = "none";
+      document.getElementById("dsl-panel-body").innerHTML = c.body;
+    }
+    node.addEventListener("mouseenter", handler);
+    node.addEventListener("focus", handler);
+    node.addEventListener("mouseleave", hideTooltip);
+    node.addEventListener("blur", hideTooltip);
+  }
+
+  function showTooltip(target, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add("is-visible");
+    var rect = target.getBoundingClientRect();
+    var top = rect.bottom + 8;
+    var left = rect.left;
+    var ttRect = tooltip.getBoundingClientRect();
+    if (left + ttRect.width > window.innerWidth - 12) left = window.innerWidth - ttRect.width - 12;
+    if (top + ttRect.height > window.innerHeight - 12) top = rect.top - ttRect.height - 8;
+    tooltip.style.top = top + "px";
+    tooltip.style.left = Math.max(12, left) + "px";
+  }
+  function hideTooltip() { tooltip.classList.remove("is-visible"); }
+})();
+</script>
+<hr>
+<section id="ai-statement" class="level4">
+<h4 class="anchored" data-anchor-id="ai-statement">AI Statement</h4>
+<p>This data science lifecycle visual was designed for the OHSU OCTRI grant blah blah. The lifecycle was extended in a Biostatistics Faculty Education Retreat (September 2026) to map courses and gaps within the curriculum. <strong>Claude AI (Sonnet 5) was used to transform the lifecycle into a html code and create more user friendly capabilities.</strong></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
